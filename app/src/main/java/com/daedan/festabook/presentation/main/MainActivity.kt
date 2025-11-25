@@ -44,7 +44,6 @@ import timber.log.Timber
 class MainActivity :
     AppCompatActivity(),
     NotificationPermissionRequester {
-
     @Inject
     override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 
@@ -116,25 +115,24 @@ class MainActivity :
     ) {
         grantResults.forEachIndexed { index, result ->
             val text = permissions[index]
-            when(text) {
+            when (text) {
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                -> {
                     if (!result.isGranted()) {
                         showNotificationDeniedSnackbar(
                             binding.root,
                             this,
-                            getString(R.string.map_request_location_permission_message)
+                            getString(R.string.map_request_location_permission_message),
                         )
                     }
                 }
             }
-
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun shouldShowPermissionRationale(permission: String): Boolean =
-        shouldShowRequestPermissionRationale(permission)
+    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

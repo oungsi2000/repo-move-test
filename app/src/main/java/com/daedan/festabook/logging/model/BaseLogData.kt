@@ -1,6 +1,5 @@
 package com.daedan.festabook.logging.model
 
-import com.daedan.festabook.logging.model.LogData
 import kotlinx.parcelize.Parcelize
 
 interface BaseLogData : LogData {

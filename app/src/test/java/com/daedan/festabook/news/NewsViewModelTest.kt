@@ -5,7 +5,6 @@ import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
-import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
@@ -202,7 +201,6 @@ class NewsViewModelTest {
             val actual = newsViewModel.faqUiState
             assertThat(actual).isEqualTo(FAQUiState.Success(expected))
         }
-
 
     @Test
     fun `처음 로드했을 때 펼처질 공지사항을 지정할 수 있다`() =

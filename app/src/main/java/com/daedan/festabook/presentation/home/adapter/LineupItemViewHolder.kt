@@ -24,7 +24,8 @@ class LineupItemViewHolder(
 
     companion object {
         fun from(parent: ViewGroup): LineupItemViewHolder {
-            val binding = ItemHomeLineupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding =
+                ItemHomeLineupBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return LineupItemViewHolder(binding)
         }
     }
