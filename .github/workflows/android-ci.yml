@@ -2,20 +2,17 @@ name: Android CI
 
 on:
   pull_request:
-    # 'main' 또는 'android' 브랜치로 PR이 병합될 때 트리거
     branches:
       - main
       - develop
-      # 'android' 디렉토리 내의 파일이 변경되었을 때만 워크플로우를 실행
-    path:
-      - '/**'
 
 jobs:
   Run-PR-Test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: android
+
+    permissions:
+      contents: write
+      checks: write
 
     steps:
       - name: Repository Checkout
@@ -34,7 +31,7 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
             ~/.android/build-cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/build.gradle.kts', 'android/**/settings.gradle.kts', 'android/**/gradle-wrapper.properties', 'android/gradle/libs.versions.toml', 'android/**/gradle.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle.kts', '**/settings.gradle.kts', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml', '**/gradle.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
@@ -62,20 +59,22 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Clean Project
-        run: ./gradlew clean
-
       - name: Run ktlint
         run: ./gradlew ktlintCheck
-        
-      - name: Run Unit Test
-        run: ./gradlew test
+
+      - name: Run Debug Unit Test (for Develop PRs)
+        if: github.base_ref == 'develop'
+        run: ./gradlew testDebugUnitTest
+
+      - name: Run Release Unit Test (for Main PRs)
+        if: github.base_ref == 'main'
+        run: ./gradlew testReleaseUnitTest
 
       - name: Publish Unit Test Results
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: android/app/build/test-results/**/TEST-*.xml
+          files: app/build/test-results/**/TEST-*.xml
           check_name: '테스트 결과 🛠️'
           check_run_annotations: 'none'
           comment_mode: 'off'
