@@ -58,7 +58,7 @@ jobs:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
       - name: Build Release AAB
-        run: ./gradlew bundleRelease
+        run: ./gradlew app:bundleRelease
 
       - name: Extract Version Code
         id: get_version
@@ -108,7 +108,7 @@ jobs:
       - name: Merge Main into Develop
         run: |
           git fetch origin main
-          git merge origin/main --no-ff -m "Merge changes from main"
+          git merge origin/main
           git push origin develop
 
 
