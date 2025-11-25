@@ -5,7 +5,6 @@ import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
-import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
@@ -99,11 +98,11 @@ class NewsViewModelTest {
                 )
 
             // when
-            newsViewModel.loadAllLostItems()
+            newsViewModel.loadAllLostItems(LostUiState.InitialLoading)
             advanceUntilIdle()
 
             // then
-            val actual = newsViewModel.lostUiState.getOrAwaitValue()
+            val actual = newsViewModel.lostUiState
             coVerify { lostItemRepository.getLost() }
             assertThat(actual).isEqualTo(expected)
         }
@@ -204,20 +203,6 @@ class NewsViewModelTest {
         }
 
     @Test
-    fun `분실물 아이템의 클릭 이벤트를 발생시킬 수 있다`() =
-        runTest {
-            // given
-            val lostItem: LostUiModel.Item = mockk()
-
-            // when
-            newsViewModel.lostItemClick(lostItem)
-
-            // then
-            val actual = newsViewModel.lostItemClickEvent.getOrAwaitValue()
-            assertThat(actual.peekContent()).isEqualTo(lostItem)
-        }
-
-    @Test
     fun `처음 로드했을 때 펼처질 공지사항을 지정할 수 있다`() =
         runTest {
             // given
@@ -256,7 +241,7 @@ class NewsViewModelTest {
             newsViewModel.toggleLostGuideExpanded()
 
             // then
-            val actual = newsViewModel.lostUiState.getOrAwaitValue()
+            val actual = newsViewModel.lostUiState
             assertThat(actual).isEqualTo(expected)
         }
 }
