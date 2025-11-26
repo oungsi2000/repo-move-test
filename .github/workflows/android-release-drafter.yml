@@ -5,6 +5,25 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Play Store track to deploy to (internal, alpha, beta, production)
+        required: true
+        default: internal
+      status:
+        description: Release status for the uploaded artifact (draft, inProgress, completed, halted)
+        required: true
+        default: draft
+      release_notes_path:
+        description: Path to the release notes file relative to the repository root
+        required: false
+        default: ""
+      release_name:
+        description: Optional explicit release name override
+        required: false
+        default: ""
+
 permissions:
   contents: write
   pull-requests: write
@@ -66,6 +85,17 @@ jobs:
           VERSION_NUMBER=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts | head -1 | sed 's/[v ]//g')
           echo "version_code=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "Extracted Version: $VERSION_NAME"
+
+      - name: Upload Bundle to Play Store
+        id: play_upload
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          packageName: com.daedan.festabook
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.track || 'production' }}
+          status: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.status || 'draft' }}
+          releaseName: app-release-bundle-${{ steps.get_version.outputs.version_code }}
 
       - name: Upload Release Artifact
         uses: actions/upload-artifact@v4
