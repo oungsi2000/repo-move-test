@@ -23,13 +23,20 @@ class PermissionHandler(
         currentPermission = permission
 
         when {
-            ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                activity,
+                permission,
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 onPermissionResult(permission, true)
             }
 
             activity.shouldShowRequestPermissionRationale(permission) -> {
                 showRationaleDialog(permission) {
-                    if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(
+                            activity,
+                            permission,
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
                         launcher.launch(permission)
                     } else {
                         onPermissionResult(permission, true)

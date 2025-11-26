@@ -15,7 +15,8 @@ class LineUpItemOfDayViewHolder(
     fun bind(lineUpItemOfDayUiModel: LineUpItemOfDayUiModel) {
         binding.rvHomeLineup.adapter = adapter
         adapter.submitList(lineUpItemOfDayUiModel.lineupItems)
-        binding.tvLineupDay.text = DateTimeFormatter.ofPattern("MM.dd").format(lineUpItemOfDayUiModel.date)
+        binding.tvLineupDay.text =
+            DateTimeFormatter.ofPattern("MM.dd").format(lineUpItemOfDayUiModel.date)
         binding.tvIsDDay.visibility = if (lineUpItemOfDayUiModel.isDDay) View.VISIBLE else View.GONE
     }
 
