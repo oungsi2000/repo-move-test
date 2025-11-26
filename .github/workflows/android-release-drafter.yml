@@ -121,6 +121,6 @@ jobs:
       - name: Merge Main into Develop
         run: |
           git fetch origin main
-          GIT_MESSAGE="Merge main into develop: ${{ steps.get_message.outputs.last_main_commit_msg }}"
+          GIT_MESSAGE="${{ steps.get_message.outputs.last_main_commit_msg }}"
           git merge origin/main --no-ff -m "Merge main into develop: $GIT_MESSAGE"
           git push origin develop
