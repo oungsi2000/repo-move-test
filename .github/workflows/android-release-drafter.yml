@@ -84,15 +84,14 @@ jobs:
       - name: Extract Version Code
         id: get_version
         run: |
-          VERSION_NUMBER=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts | head -1 | sed 's/[v ]//g')
+          VERSION_NAME=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts | head -1 | sed 's/[v ]//g')
           echo "version_code=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "Extracted Version: $VERSION_NAME"
 
       - name: Update Draft Release
         uses: release-drafter/release-drafter@v6
         with:
-          version: 5.0.0
-          disable-pre-release: true
+          version: ${{ steps.get_version.outputs.version_code }}
           config-name: template/release-drafter.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,5 +121,6 @@ jobs:
       - name: Merge Main into Develop
         run: |
           git fetch origin main
-          git merge origin/main --no-ff -m "Merge main into develop: ${LAST_MSG}"
+          GIT_MESSAGE="Merge main into develop: ${{ steps.get_message.outputs.last_main_commit_msg }}"
+          git merge origin/main --no-ff -m "Merge main into develop: $GIT_MESSAGE"
           git push origin develop
