@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  Deploy:
+  Upload-Release-Bundle:
     runs-on: ubuntu-latest
 
     steps:
@@ -67,7 +67,7 @@ jobs:
           echo "version_code=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "Extracted Version: $VERSION_NAME"
 
-      - name: ⬆️ Upload Release Artifact
+      - name: Upload Release Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-bundle-${{ steps.get_version.outputs.version_code }}
@@ -91,7 +91,7 @@ jobs:
       - name: Update Draft Release
         uses: release-drafter/release-drafter@v6
         with:
-          version: ${{ steps.get_version.outputs.version_code }}
+          version: 5.0.0
           disable-pre-release: true
           config-name: template/release-drafter.yml
         env:
@@ -113,8 +113,14 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
+      - name: Get Last Main Commit Message
+        id: get_message
+        run: |
+          COMMIT_MSG=$(git log origin/main -1 --pretty=format:%s)
+          echo "last_main_commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+
       - name: Merge Main into Develop
         run: |
           git fetch origin main
-          git merge origin/main
+          git merge origin/main --no-ff -m "Merge main into develop: ${LAST_MSG}"
           git push origin develop
