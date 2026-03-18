@@ -15,7 +15,9 @@ import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.lost.LostUiState
+import com.daedan.festabook.presentation.news.lost.model.LostItemFilter
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
+import com.daedan.festabook.presentation.news.lost.model.matches
 import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostItemUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
@@ -51,6 +53,8 @@ class NewsViewModel(
     val isLostItemScreenRefreshing by derivedStateOf {
         lostUiState is LostUiState.Refreshing
     }
+
+    private var allLostItems: List<LostUiModel> = emptyList()
 
     private var noticeIdToExpand: Long? = null
 
@@ -146,8 +150,16 @@ class NewsViewModel(
                         null -> LostUiModel.Guide()
                     }
                 }
+            allLostItems = lostUiModels
             lostUiState = LostUiState.Success(lostUiModels)
         }
+    }
+
+    fun setLostItemFilter(filter: LostItemFilter) {
+        val currentState = lostUiState as? LostUiState.Success ?: return
+        val guide = allLostItems.filterIsInstance<LostUiModel.Guide>()
+        val filtered = allLostItems.filterIsInstance<LostUiModel.Item>().filter { filter.matches(it) }
+        lostUiState = currentState.copy(lostItems = guide + filtered, activeFilter = filter)
     }
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {
