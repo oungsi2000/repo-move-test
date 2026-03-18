@@ -202,8 +202,12 @@ class NewsViewModel(
         val currentState = lostUiState
         lostUiState =
             when (currentState) {
-                is LostUiState.Success -> currentState.copy(lostItems = onUpdate(currentState.lostItems))
+                is LostUiState.Success -> currentState.copy(
+                    lostItems = onUpdate(currentState.lostItems),
+                    activeFilter = currentState.activeFilter,
+                )
                 else -> currentState
             }
+        allLostItems = onUpdate(allLostItems)
     }
 }

@@ -2,13 +2,18 @@ package com.daedan.festabook.presentation.news.lost.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +33,7 @@ import com.daedan.festabook.presentation.common.component.PULL_OFFSET_LIMIT
 import com.daedan.festabook.presentation.common.component.PullToRefreshContainer
 import com.daedan.festabook.presentation.news.component.NewsItem
 import com.daedan.festabook.presentation.news.lost.LostUiState
+import com.daedan.festabook.presentation.news.lost.model.LostItemFilter
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiStatus
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import timber.log.Timber
@@ -42,6 +48,7 @@ fun LostItemScreen(
     onLostGuideClick: () -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    onFilterChange: (LostItemFilter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var clickedLostItem by remember { mutableStateOf<LostUiModel.Item?>(null) }
@@ -70,8 +77,10 @@ fun LostItemScreen(
             is LostUiState.Refreshing -> {
                 LostItemContent(
                     lostItems = lostUiState.oldLostItems,
+                    activeFilter = lostUiState.activeFilter,
                     onLostGuideClick = onLostGuideClick,
                     onLostItemClick = { },
+                    onFilterChange = onFilterChange,
                     modifier =
                         modifier
                             .fillMaxSize()
@@ -85,8 +94,10 @@ fun LostItemScreen(
             is LostUiState.Success -> {
                 LostItemContent(
                     lostItems = lostUiState.lostItems,
+                    activeFilter = lostUiState.activeFilter,
                     onLostGuideClick = onLostGuideClick,
                     onLostItemClick = { clickedLostItem = it },
+                    onFilterChange = onFilterChange,
                     modifier =
                         modifier
                             .fillMaxSize()
@@ -101,10 +112,32 @@ fun LostItemScreen(
 }
 
 @Composable
+private fun LostItemFilterRow(
+    activeFilter: LostItemFilter,
+    onFilterChange: (LostItemFilter) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth().padding(horizontal = PADDING.dp),
+        horizontalArrangement = Arrangement.spacedBy(PADDING.dp),
+    ) {
+        LostItemFilter.entries.forEach { filter ->
+            FilterChip(
+                selected = activeFilter == filter,
+                onClick = { onFilterChange(filter) },
+                label = { Text(filter.displayName) },
+            )
+        }
+    }
+}
+
+@Composable
 private fun LostItemContent(
     lostItems: List<LostUiModel>,
+    activeFilter: LostItemFilter,
     onLostGuideClick: () -> Unit,
     onLostItemClick: (LostUiModel.Item) -> Unit,
+    onFilterChange: (LostItemFilter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isLostItemEmpty = lostItems.none { it is LostUiModel.Item }
@@ -136,6 +169,12 @@ private fun LostItemContent(
                         },
                 )
             }
+        }
+        item(span = { GridItemSpan(SPAN_COUNT) }) {
+            LostItemFilterRow(
+                activeFilter = activeFilter,
+                onFilterChange = onFilterChange,
+            )
         }
         items(
             items = lostItems.drop(1).filterIsInstance<LostUiModel.Item>(),
@@ -175,8 +214,10 @@ private fun LostItemContentPreview() {
         )
     LostItemContent(
         lostItems = dummyLostList,
+        activeFilter = LostItemFilter.ALL,
         onLostGuideClick = { },
-        modifier = Modifier.fillMaxSize(),
         onLostItemClick = { },
+        onFilterChange = { },
+        modifier = Modifier.fillMaxSize(),
     )
 }

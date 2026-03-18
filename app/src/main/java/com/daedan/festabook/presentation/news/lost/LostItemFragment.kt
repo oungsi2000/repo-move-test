@@ -41,8 +41,12 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
                         val currentUiState = viewModel.lostUiState
                         val oldLostItems =
                             if (currentUiState is LostUiState.Success) currentUiState.lostItems else emptyList()
-                        viewModel.loadAllLostItems(LostUiState.Refreshing(oldLostItems))
+                        val activeFilter =
+                            if (currentUiState is LostUiState.Success) currentUiState.activeFilter
+                            else com.daedan.festabook.presentation.news.lost.model.LostItemFilter.ALL
+                        viewModel.loadAllLostItems(LostUiState.Refreshing(oldLostItems, activeFilter))
                     },
+                    onFilterChange = { viewModel.setLostItemFilter(it) },
                 )
             }
         }
