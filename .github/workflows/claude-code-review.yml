@@ -42,7 +42,7 @@ jobs:
           claude_args: >-
             --allowedTools
             "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh pr comment:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*) "
-          prompt: '/code-review:code-review ${{ github.event.pull_request.number }} --comment'
+          prompt: '/code-review:code-review ${{ github.event.pull_request.number }} --comment 변경된 파일만 간결하게 리뷰해줘. max-turn은 최대 20까지야'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
