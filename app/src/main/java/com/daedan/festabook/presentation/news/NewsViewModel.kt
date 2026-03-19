@@ -151,15 +151,31 @@ class NewsViewModel(
                     }
                 }
             allLostItems = lostUiModels
-            lostUiState = LostUiState.Success(lostUiModels)
+            val activeFilter =
+                when (state) {
+                    is LostUiState.Refreshing -> state.activeFilter
+                    is LostUiState.Success -> state.activeFilter
+                    else -> LostItemFilter.ALL
+                }
+            val guide = lostUiModels.filterIsInstance<LostUiModel.Guide>()
+            val filtered = lostUiModels.filterIsInstance<LostUiModel.Item>().filter { activeFilter.matches(it) }
+            lostUiState =
+                LostUiState.Success(
+                    lostItems = guide + filtered,
+                    activeFilter = activeFilter,
+                )
         }
     }
 
     fun setLostItemFilter(filter: LostItemFilter) {
-        val currentState = lostUiState as? LostUiState.Success ?: return
         val guide = allLostItems.filterIsInstance<LostUiModel.Guide>()
         val filtered = allLostItems.filterIsInstance<LostUiModel.Item>().filter { filter.matches(it) }
-        lostUiState = currentState.copy(lostItems = guide + filtered, activeFilter = filter)
+        lostUiState =
+            when (val currentState = lostUiState) {
+                is LostUiState.Success -> currentState.copy(lostItems = guide + filtered, activeFilter = filter)
+                is LostUiState.Refreshing -> currentState.copy(oldLostItems = guide + filtered, activeFilter = filter)
+                else -> return
+            }
     }
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {

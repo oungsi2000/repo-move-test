@@ -1,6 +1,8 @@
 package com.daedan.festabook.presentation.news.lost.model
 
-enum class LostItemFilter(val displayName: String) {
+enum class LostItemFilter(
+    val displayName: String,
+) {
     ALL("전체"),
     PENDING("보관중"),
     COMPLETED("수령완료"),
