@@ -14,6 +14,7 @@ import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.lost.component.LostItemScreen
+import com.daedan.festabook.presentation.news.lost.model.LostItemFilter
 import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
@@ -41,8 +42,15 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
                         val currentUiState = viewModel.lostUiState
                         val oldLostItems =
                             if (currentUiState is LostUiState.Success) currentUiState.lostItems else emptyList()
-                        viewModel.loadAllLostItems(LostUiState.Refreshing(oldLostItems))
+                        val activeFilter =
+                            if (currentUiState is LostUiState.Success) {
+                                currentUiState.activeFilter
+                            } else {
+                                LostItemFilter.ALL
+                            }
+                        viewModel.loadAllLostItems(LostUiState.Refreshing(oldLostItems, activeFilter))
                     },
+                    onFilterChange = { viewModel.setLostItemFilter(it) },
                 )
             }
         }
