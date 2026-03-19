@@ -41,8 +41,8 @@ jobs:
           plugins: 'code-review@claude-code-plugins'
           claude_args: >-
             --allowedTools
-            "Bash(gh pr *),Bash(gh api *),Bash(gh repo view:*),Bash(git log:*),Bash(git diff:*),Bash(git remote:*),Read(*),Glob(*),Grep(*)"
-          prompt: "/code-review:code-review ${{ github.event.pull_request.number }} --comment 다음 사항을 꼭 지켜주세요. 1. 변경된 파일만 간결하게 리뷰해세요. 2. max-turn은 최대 20까지입니다. 3. 꼭 리뷰 결과를 gh api를 사용해서 PR 인라인 코멘트로 달아주세요."
+             "Bash(gh pr *),Bash(gh api *),Bash(gh repo view:*),Bash(git log:*),Bash(git diff:*),Bash(git remote:*),Bash(git fetch:*),Read(*),Glob(*),Grep(*)" 
+          prompt: "/code-review:code-review ${{ github.event.pull_request.number }} --comment 다음 사항을 꼭 지켜주세요. 1. 변경된 파일만 간결하게 리뷰해세요. 2. max-turn은 최대 30까지입니다. 3. 꼭 리뷰 결과를 gh api를 사용해서 PR 인라인 코멘트로 달아주세요."
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
