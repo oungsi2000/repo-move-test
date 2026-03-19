@@ -42,8 +42,6 @@ jobs:
           claude_args: >-
             --allowedTools
             "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh pr comment:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*) "
-            --max-turns 
-            "15"
           prompt: '/code-review:code-review ${{ github.event.pull_request.number }} --comment'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
